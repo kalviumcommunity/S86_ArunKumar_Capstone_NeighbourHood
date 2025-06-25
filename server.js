@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const routes = require('./routes'); // Adjust the path to the actual location of routes.js
+const routes = require('./routes/routes'); // Adjust the path to the actual location of routes.js
 
 // Middleware to parse JSON
 app.use(express.json());
