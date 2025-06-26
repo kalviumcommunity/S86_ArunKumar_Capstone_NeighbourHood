@@ -1,0 +1,26 @@
+{
+  "name": "s86_arunkumar_capstone_neighbourhood",
+  "version": "1.0.0",
+  "description": "Neighbourhood Help Network\r Overview\r The Neighbourhood Help Network is an innovative web-based platform aimed at building stronger community ties by facilitating local collaboration. It empowers individuals to connect with neighbors, making it easier to seek and offer help within their vicinity. This platform envisions a world where assistance is just a click away, fostering goodwill and resource sharing.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalviumcommunity/S86_ArunKumar_Capstone_NeighbourHood.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kalviumcommunity/S86_ArunKumar_Capstone_NeighbourHood/issues"
+  },
+  "homepage": "https://github.com/kalviumcommunity/S86_ArunKumar_Capstone_NeighbourHood#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {}
+}
