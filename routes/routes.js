@@ -1,55 +1,65 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('../models/schema'); // Adjust the path to your User model
 const router = express.Router();
-const Post = require('../models/schema');
-const User = require('../models/user');
 
-// Create a new post and associate with a user
-router.post('/posts', async (req, res) => {
-    const { title, description, userId } = req.body;
 
-    if (!title || !description || !userId) {
-        return res.status(400).json({ message: "Title, description, and userId are required." });
-    }
+const authenticate = require('../middleware/auth');
 
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "User not found." });
-        }
-
-        const newPost = new Post({ title, description, user: userId });
-        await newPost.save();
-
-        user.posts.push(newPost._id);
-        await user.save();
-
-        res.status(201).json({ message: "Post created successfully.", post: newPost });
-    } catch (error) {
-        res.status(500).json({ message: "Error creating post.", error });
-    }
+router.get('/protected-route', authenticate, (req, res) => {
+  res.status(200).json({ message: 'Access granted.', user: req.user });
 });
 
-// Fetch all posts with user details
-router.get('/posts', async (req, res) => {
-    try {
-        const posts = await Post.find().populate('user', 'name email');
-        res.json(posts);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching posts.", error });
+
+// Register a new user
+router.post('/register', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required.' });
     }
+
+    const userExists = await User.findOne({ username });
+    if (userExists) {
+      return res.status(400).json({ message: 'Username already exists.' });
+    }
+
+    const newUser = new User({ username, password });
+    await newUser.save();
+
+    res.status(201).json({ message: 'User registered successfully.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error });
+  }
 });
 
-// Fetch a specific post by ID with user details
-router.get('/posts/:id', async (req, res) => {
-    try {
-        const post = await Post.findById(req.params.id).populate('user', 'name email');
-        if (!post) {
-            return res.status(404).json({ message: "Post not found." });
-        }
-        res.json(post);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching post.", error });
+// Login a user
+router.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required.' });
     }
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials.' });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ message: 'Login successful.', token });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error.', error });
+  }
 });
 
 module.exports = router;
