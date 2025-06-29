@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/schema'); // Adjust the path to your User model
 const router = express.Router();
-
+const { generateToken, verifyToken } = require('../utils/jwt');
 
 const authenticate = require('../middleware/auth');
 
